@@ -8,3 +8,5 @@ GITHUB_API_TREE  = f"https://api.github.com/repos/{GITHUB_REPO}/git/trees/{GITHU
 GITHUB_RAW_BASE  = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}"
 GITHUB_INFO_URL  = f"{GITHUB_RAW_BASE}/INFO.py"
 
+print("hiii")
+

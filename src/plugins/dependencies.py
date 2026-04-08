@@ -3,7 +3,6 @@ from pydoc import describe
 import re
 import subprocess
 import sys
-import traceback
 
 __FINISHED = False
 
@@ -20,6 +19,7 @@ class Dependencies:
         return m
 
     _pip: dict[str, Pip] = {}
+
 
 class Pip:
     def __init__(self, match: re.Match[str]):
@@ -52,7 +52,12 @@ def _installPip():
     if not Dependencies._pip:
         return
     proc: subprocess.Popen[bytes] = subprocess.Popen(
-        [".venv/Scripts/activate.bat;", sys.executable, "-m", "pip", "install", *[i.arg for i in Dependencies._pip.values()]])
+        [sys.executable, "-m", "pip", "--python .venv", "install",
+            *[i.arg for i in Dependencies._pip.values()]],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
 
 
 async def _installPip_async():
