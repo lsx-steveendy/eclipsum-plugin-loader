@@ -8,6 +8,7 @@ set Lib=.venv\Lib\
     echo set target=src\__init__.py
 
     echo call %%Scripts%%activate.bat
+    echo %%python%% -m ensurepip --upgrade
     echo %%python%% %%target%%
     echo call %%Scripts%%deactivate.bat
 ) > %Lib%execute.bat

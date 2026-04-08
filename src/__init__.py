@@ -5,3 +5,4 @@
 ## DO NOT RUN THIS ON YOUR OWN unless you know what you're doing. Otherwise run start.bat instead.
 """
 
+from src.plugins import *
