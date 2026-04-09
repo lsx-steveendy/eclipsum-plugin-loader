@@ -3,9 +3,15 @@ from pydoc import describe
 import re
 import subprocess
 import sys
-
+from packaging.version import _BaseVersion, VERSION_PATTERN
 __FINISHED = False
+_version_comparison_pattern = re.compile(r"([a-zA-Z\-\_0-9]+)(?:(==|>=|<=)("+VERSION_PATTERN+r"))*")
 
+class Pip:
+    def __init__(self, match: re.Match[str]):
+        self.arg = match.group()
+        self.raw_arg = match.group(1)  # no additional arguments
+        self.name = match.group(2) or match.group(3)
 
 class Dependencies:
     """do not"""
@@ -20,19 +26,9 @@ class Dependencies:
 
     _pip: dict[str, Pip] = {}
 
-
-class Pip:
-    def __init__(self, match: re.Match[str]):
-        self.arg = match.group()
-        self.raw_arg = match.group(1)  # no additional arguments
-        self.name = match.group(2) or match.group(3)
-
 # Equals to "py -m pip install {arg}"
 # Make sure arg has a format of "{name}", "{name}=={ver}", "{name}>={ver}" or "{name}<={ver}"
-# You can also add additional
 # https://pip.pypa.io/en/latest/user_guide/
-
-
 def dependencyPip(arg: str):
     match = Dependencies._validatePipArg(arg)
     if not match:
@@ -45,19 +41,21 @@ def dependencyPip(arg: str):
             f"Dependency was already registered: {duplicate.arg} -> {pip_dep.arg}")
     Dependencies._pip[pip_dep.name] = pip_dep
 
-
 def _installPip():
     if __FINISHED:
         return
     if not Dependencies._pip:
         return
     proc: subprocess.Popen[bytes] = subprocess.Popen(
-        [sys.executable, "-m", "pip", "--python .venv", "install",
+        [".venv/Scripts/pip.exe", "install",
             *[i.arg for i in Dependencies._pip.values()]],
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
+        stderr=subprocess.PIPE
     )
+
+    proc.wait()
+
+    print(proc.stdout.read())
 
 
 async def _installPip_async():

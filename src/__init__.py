@@ -19,6 +19,8 @@ from src.plugins import *
 LOGGER = logger.getLogger("Eclipsum")
 
 
+
+
 def do_plugins():
     started = time.monotonic()
 
@@ -36,6 +38,14 @@ def do_plugins():
     if not plugins:
         LOGGER.error(f"All plugins failed to prepare (2/2). Closing app.")
         sys.exit()
+
+    LOGGER.info(f"Installing dependencies...")
+    try:
+        dependencies._installPip()
+    except Exception as e:
+        LOGGER.error(f"Failed to install dependencies.", stack_info=True)
+        sys.exit()
+
 
     initialized = initializer._initPlugins(plugins)
     ended = time.monotonic()
